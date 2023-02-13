@@ -29,11 +29,6 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-
-<!--            For ML Kit when download from playstore -->
-            <meta-data
-                android:name="com.google.mlkit.vision.DEPENDENCIES"
-                android:value="ocr" />
         </activity>
 <!--        <provider-->
 <!--            android:authorities="photon.app.mediscanner.fileProvider"-->

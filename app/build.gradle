@@ -49,4 +49,8 @@ dependencies {
     implementation "androidx.camera:camera-extensions:1.0.0-alpha10"
 
 
+    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:16.0.0'
+
+
+
 }

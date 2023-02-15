@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical"
-    >
+    tools:context=".CameraActivity">
 
+    <androidx.camera.view.PreviewView
+        android:id="@+id/preview_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
 
+        />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom|end">
+        android:gravity="bottom|center"
 
+        >
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/amFabBtn"
+            android:id="@+id/acCaptureImageBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_camera"
-            app:backgroundTint="@color/primary_color"
-            android:contentDescription="a"
-            app:elevation="6dp"
+            android:backgroundTint="@color/white"
             app:fabSize="normal"
-            app:pressedTranslationZ="12dp"
-            app:useCompatPadding="true" />
+            android:layout_marginBottom="50dp"
+            android:elevation="9dp"
+
+            />
     </RelativeLayout>
-</LinearLayout>
+
+</RelativeLayout>

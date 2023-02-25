@@ -19,11 +19,9 @@ import androidx.lifecycle.LifecycleOwner;
 
 import android.Manifest;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.KeyEvent;
 import android.view.View;
@@ -42,7 +40,7 @@ import kotlinx.coroutines.Dispatchers;
 public class CameraActivity extends AppCompatActivity implements LifecycleOwner {
 
     private static final int REQUEST_CODE_PERMISSIONS = 10;
-    private static final String[] REQUIRED_PERMISSIONS = { Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA};
+    private static final String[] REQUIRED_PERMISSIONS = { Manifest.permission.CAMERA };
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
@@ -88,7 +86,6 @@ public class CameraActivity extends AppCompatActivity implements LifecycleOwner 
                     }
                 }
         );
-        createFolder();
     }
 
     private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
@@ -143,23 +140,15 @@ public class CameraActivity extends AppCompatActivity implements LifecycleOwner 
             @RequiresApi(api = Build.VERSION_CODES.P)
             @Override
             public void onClick(View view) {
-               
-                capturePhoto();
+               capturePhoto();
             }
         });
 
-    }
 
-    public void createFolder() {
-        File file = new File(Environment.getExternalStorageDirectory(),"MediScanner");
-        if(!file.exists()){
-            file.mkdir();
-            Toast.makeText(getApplicationContext(),"folder created",Toast.LENGTH_SHORT).show();
 
-        }else {
-            Toast.makeText(getApplicationContext(),"folder is already",Toast.LENGTH_SHORT).show();
 
-        }
+
+
     }
 
     private void startCamera() {
@@ -188,8 +177,7 @@ public class CameraActivity extends AppCompatActivity implements LifecycleOwner 
         imageCapture.takePicture(new ImageCapture.OutputFileOptions.Builder(getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues).build(), getMainExecutor(), new ImageCapture.OnImageSavedCallback() {
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                Toast.makeText(getApplicationContext(),"Image Saved",Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                Toast.makeText(getApplicationContext(),"Saving...",Toast.LENGTH_SHORT).show();
 
             }
 
@@ -225,7 +213,7 @@ public class CameraActivity extends AppCompatActivity implements LifecycleOwner 
     /**
      * Check if all permission specified in the manifest have been granted
      */
-    public boolean allPermissionsGranted() {
+    private boolean allPermissionsGranted() {
         for (String permission : REQUIRED_PERMISSIONS) {
             if (ContextCompat.checkSelfPermission(getBaseContext(), permission) != PackageManager.PERMISSION_GRANTED) {
                 return false;

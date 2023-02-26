@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -17,6 +18,9 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
     static ImageView camImage;
     public static Uri imageUri;
 
+    TextView firstText;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
 
         cameraFabBtn = findViewById(R.id.amFabBtn);
         camImage = findViewById(R.id.amImageView);
+//        camImage.setVisibility(View.GONE);
+        firstText = findViewById(R.id.amFirstText);
 
         cameraFabBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -31,8 +37,16 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
                 startActivity(new Intent(getApplicationContext(),CameraActivity.class));
             }
         });
-        if(imageUri !=null)
+        if(imageUri !=null){
+            firstText.setVisibility(View.GONE);
+            camImage.setVisibility(View.VISIBLE);
             camImage.setImageURI(imageUri);
+        }
+        else{
+            camImage.setVisibility(View.GONE);
+            firstText.setVisibility(View.VISIBLE);
+
+        }
 
 
 
@@ -40,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
     }
     public static Uri getImage(Uri savedUri){
         imageUri = savedUri;
-
         return imageUri;
 
     }

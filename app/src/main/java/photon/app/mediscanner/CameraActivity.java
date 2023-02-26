@@ -7,6 +7,7 @@ import androidx.camera.core.Camera;
 import androidx.camera.core.CameraControl;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.CameraX;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
@@ -19,7 +20,9 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.Image;
 import android.net.Uri;
@@ -188,6 +191,7 @@ public class CameraActivity extends AppCompatActivity implements LifecycleOwner 
 
 
         imageCapture.takePicture(new ImageCapture.OutputFileOptions.Builder(getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues).build(), getMainExecutor(), new ImageCapture.OnImageSavedCallback() {
+            @SuppressLint("RestrictedApi")
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
 
@@ -196,7 +200,10 @@ public class CameraActivity extends AppCompatActivity implements LifecycleOwner 
                 Uri savedUri = outputFileResults.getSavedUri() != null ? outputFileResults.getSavedUri() : Uri.fromFile(photoFile);
                 imageView.post(() -> {
                     imageView.setImageURI(savedUri);
+                    MainActivity.getImage(savedUri);
+                    startActivity(new Intent(getApplicationContext(),MainActivity.class));
                 });
+                CameraX.unbindAll();
 
             }
 

@@ -3,13 +3,14 @@ package photon.app.mediscanner;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.camera2.internal.annotation.CameraExecutor;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraControl;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -20,10 +21,12 @@ import androidx.lifecycle.LifecycleOwner;
 import android.Manifest;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.KeyEvent;
+import android.util.Size;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -33,9 +36,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-
-import kotlinx.coroutines.Dispatchers;
 
 public class CameraActivity extends AppCompatActivity implements LifecycleOwner {
 
@@ -43,7 +43,10 @@ public class CameraActivity extends AppCompatActivity implements LifecycleOwner 
     private static final String[] REQUIRED_PERMISSIONS = { Manifest.permission.CAMERA };
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+
     private PreviewView previewView;
+    private ImageView imageView;
+    private ImageCapture imageCapture;
 
     ProcessCameraProvider processCameraProvider;
 
@@ -52,7 +55,6 @@ public class CameraActivity extends AppCompatActivity implements LifecycleOwner 
 
     ImageView torchIconOff,torchIconOn;
 
-    private ImageCapture imageCapture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,8 @@ public class CameraActivity extends AppCompatActivity implements LifecycleOwner 
         setContentView(R.layout.activity_camera);
 
         previewView = findViewById(R.id.acPreviewView);
+        imageView = findViewById(R.id.acImageView);
+
         fabBtnImageCapture = findViewById(R.id.acCaptureImageBtn);
 
         torchIconOff = findViewById(R.id.acTorchIconOff);
@@ -174,10 +178,25 @@ public class CameraActivity extends AppCompatActivity implements LifecycleOwner 
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, timeStamp);
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
 
+
+        File outputDirectory = getOutputDirectory();
+        File photoFile = new File(
+                outputDirectory,
+                "photo.jpg"
+        );
+        ImageCapture.Metadata metadata = new ImageCapture.Metadata();
+
+
         imageCapture.takePicture(new ImageCapture.OutputFileOptions.Builder(getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues).build(), getMainExecutor(), new ImageCapture.OnImageSavedCallback() {
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                Toast.makeText(getApplicationContext(),"Saving...",Toast.LENGTH_SHORT).show();
+
+
+                Toast.makeText(getApplicationContext(),"Saving..."+outputFileResults,Toast.LENGTH_SHORT).show();
+                Uri savedUri = outputFileResults.getSavedUri() != null ? outputFileResults.getSavedUri() : Uri.fromFile(photoFile);
+                imageView.post(() -> {
+                    imageView.setImageURI(savedUri);
+                });
 
             }
 
@@ -188,7 +207,14 @@ public class CameraActivity extends AppCompatActivity implements LifecycleOwner 
             }
         });
 
+
+
     }
+    private File getOutputDirectory() {
+        File mediaDir = getExternalMediaDirs()[0];
+        return new File(mediaDir, getString(R.string.app_name));
+    }
+
 
     /**
      * Process result from permission request dialog box, has the request
